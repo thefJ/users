@@ -8,6 +8,7 @@ parameters:
 services:
     # default configuration for services in *this* file
     _defaults:
+        public: true
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
@@ -16,9 +17,18 @@ services:
     App\:
         resource: '../src/'
         exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
+            - '../src/Domain/*/Entity/'
+            - '../src/Domain/*/ValueObject/'
+            - '../src/Domain/*/DTO/'
+            - '../src/Presentation/*/Controller/'
+            - '../src/Infrastructure/Migrations/'
+            - '../src/Infrastructure/DataFixtures/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Infrastructure\DataFixtures\:
+        resource: '%kernel.project_dir%/src/Infrastructure/DataFixtures'
+        tags:
+            - { name: 'doctrine.fixture.orm' }
+
+    App\Domain\User\Repository\UserRepositoryInterface: '@App\Infrastructure\Repository\User\UserRepository'
+
